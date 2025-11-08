@@ -1,35 +1,29 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
-import { useState } from "react";
+import { Box, Button, TextField } from "@mui/material";
+import { useState, type MouseEvent } from "react";
+import { useAddTag } from "../../hooks/useAddTag";
+import type { Tag } from "../../types/models";
 
-function AddTagForm({ onTagAdded }) {
+interface AddTagFormProps {
+  onTagAdded: (newTag: Tag) => void;
+}
+
+function AddTagForm({ onTagAdded }: AddTagFormProps) {
   const [tagName, setTagname] = useState("");
   const [tagColor, setTagColor] = useState("#e3c571");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleAddTag = async (e) => {
+  const { mutate: addTag, isPending } = useAddTag({ onTagAdded });
+
+  const handleAddTag = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setError("");
-    if (!tagName.trim()) return;
-
-    try {
-      setLoading(true);
-      const res = await fetch("/api/tags", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: tagName, color: tagColor }),
-      });
-
-      if (!res.ok) throw new Error(`Ошибка: ${res.status}`);
-      const newTag = await res.json();
-
-      onTagAdded(newTag);
-      setTagname("");
-    } catch (err) {
-      setError("Не удалось добавить тег");
-    } finally {
-      setLoading(false);
+    if (!tagName.trim()) {
+      setError("Введите название тега!");
+      return;
     }
+
+    setError("");
+    addTag({ name: tagName, color: tagColor });
+    setTagname("");
   };
 
   return (
@@ -56,14 +50,15 @@ function AddTagForm({ onTagAdded }) {
           cursor: "pointer",
         }}
       />
+
       <Button
         variant="contained"
         sx={{ mt: 2, backgroundColor: "#d1b58b", color: "#5a4a3a" }}
         size="small"
-        type="submit"
         onClick={handleAddTag}
+        disabled={isPending}
       >
-        Добавить тег
+        {isPending ? "Добавление..." : "Добавить тег"}
       </Button>
     </Box>
   );

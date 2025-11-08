@@ -1,8 +1,19 @@
 import { Box, Chip, FormControl, FormLabel } from "@mui/material";
+import type { Tag } from "../../types/models";
 
-function TagSelector({ availableTags, selectedTag, onChange }) {
-  function handleTagClick(tag) {
-    onChange(tag.id === selectedTag ? null : tag.id);
+interface TagSelectorProps {
+  availableTags: Tag[];
+  selectedTag: string;
+  onChange: (tagId: string | null) => void;
+}
+
+function TagSelector({
+  availableTags,
+  selectedTag,
+  onChange,
+}: TagSelectorProps) {
+  function handleTagClick(tag: Tag) {
+    onChange(tag.id === selectedTag ? "" : tag.id);
   }
 
   return (

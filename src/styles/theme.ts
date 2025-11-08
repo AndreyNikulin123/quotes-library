@@ -6,7 +6,7 @@ const theme: Theme = createTheme({
   },
   palette: {
     primary: {
-      main: "#b36b00", // твой основной цвет (например, тёплый янтарный)
+      main: "#b36b00", // основной цвет (например, тёплый янтарный)
     },
   },
   components: {
